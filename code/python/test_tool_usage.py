@@ -2,6 +2,24 @@ import json
 import ollama
 import asyncio
 
+def calculate_tokens_per_second_from_object(data):
+    """
+    Calculate the number of tokens generated per second from a given object.
+
+    Parameters:
+        data (dict): The object containing 'eval_count' and 'eval_duration' keys.
+
+    Returns:
+        float: Tokens generated per second.
+    """
+    eval_count = data.get('eval_count', 0)
+    eval_duration = data.get('eval_duration', 1)  # Default to 1 to avoid division by zero
+
+    if eval_duration == 0:
+        raise ValueError("Evaluation duration cannot be zero.")
+
+    tokens_per_second = (eval_count / eval_duration) * 10**9
+    return tokens_per_second
 
 # Simulates an API call to get flight times
 # In a real application, this would fetch data from a live database or API
@@ -56,6 +74,7 @@ async def run(model: str):
 
   #print(response)
   # Add the model's response to the conversation history
+  print(f"[] Tokens/s {calculate_tokens_per_second_from_object(response)}")
   messages.append(response['message'])
 
   # Check if the model decided to use the provided function
@@ -86,6 +105,8 @@ async def run(model: str):
   print(f"[] messages{messages}")
   # Second API call: Get final response from the model
   final_response = await client.chat(model=model, messages=messages)
+  
+  print(f"[] Tokens/s {calculate_tokens_per_second_from_object(final_response)}")
   print(final_response['message']['content'])
 
 

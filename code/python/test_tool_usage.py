@@ -23,7 +23,7 @@ def get_flight_times(departure: str, arrival: str) -> str:
 async def run(model: str):
   client = ollama.AsyncClient()
   # Initialize conversation with a user query
-  messages = [{'role': 'user', 'content': 'What is the flight time from New York (NYC) to Los Angeles (LAX)?'}]
+  messages = [{'role': 'user', 'content': 'You are a flight assistant. People will ask you about flight information. You will always use airport code, instead of Cities. Question:  What is the flight time from New York (NYC) to Los Angeles (LAX)?. '}]
 
   # First API call: Send the query and function description to the model
   response = await client.chat(
@@ -83,10 +83,11 @@ async def run(model: str):
         }
       )
 
+  print(f"[] messages{messages}")
   # Second API call: Get final response from the model
   final_response = await client.chat(model=model, messages=messages)
   print(final_response['message']['content'])
 
 
 # Run the async function
-asyncio.run(run('llama3.2:1b'))
+asyncio.run(run('llama3.2:3b'))
